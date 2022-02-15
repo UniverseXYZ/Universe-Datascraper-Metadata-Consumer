@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { NFTMetadataModule } from '../nft-metadata/nft-metadata.module';
+import { RuleEngineModule } from '../rule-engine/rule-engine.module';
 import { SqsConsumerService } from './sqs-consumer.service';
 
 @Module({
-  imports: [NFTMetadataModule],
+  imports: [RuleEngineModule],
   providers: [SqsConsumerService],
   exports: [SqsConsumerService],
 })

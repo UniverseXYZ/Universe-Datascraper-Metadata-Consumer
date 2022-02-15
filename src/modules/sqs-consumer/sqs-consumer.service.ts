@@ -14,8 +14,8 @@ import {
   TokenMessage,
 } from './sqs-consumer.types';
 import { ConfigService } from '@nestjs/config';
-import { NFTMetadataService } from '../nft-metadata/nft-metadata.service';
 import https from 'https';
+import { RuleEngineService } from '../rule-engine/rule-engine.service';
 
 @Injectable()
 export class SqsConsumerService
@@ -27,7 +27,7 @@ export class SqsConsumerService
 
   constructor(
     private configService: ConfigService,
-    private nftMetadataService: NFTMetadataService,
+    private metadataRuleEngine: RuleEngineService,
   ) {
     const region = this.configService.get('aws.region');
     const accessKeyId = this.configService.get('aws.accessKeyId');
@@ -81,7 +81,7 @@ export class SqsConsumerService
     this.logger.log(`Handle sqs message id:(${message.MessageId})`);
     const tokenMessage: TokenMessage = JSON.parse(message.Body);
     const { contractAddress, contractType, tokenId } = tokenMessage;
-    await this.nftMetadataService.FetchNFTMetadata(
+    await this.metadataRuleEngine.FetchNFTMetadata(
       contractAddress,
       contractType,
       tokenId,

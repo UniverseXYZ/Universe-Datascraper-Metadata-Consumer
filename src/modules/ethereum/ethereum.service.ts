@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class EthereumService {
-  public ether: ethers.providers.InfuraProvider;
+  public ether: ethers.providers.BaseProvider;
 
   constructor(private configService: ConfigService) {
     const key = this.configService.get('ethereum_network');

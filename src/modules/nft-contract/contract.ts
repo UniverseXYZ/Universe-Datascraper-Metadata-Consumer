@@ -41,7 +41,7 @@ const ERC1155_ABI = [
     type: 'function',
   },
 ] as any;
-export type ContractType = 'ERC721' | 'ERC1155';
+export type ContractType = 'ERC721' | 'ERC1155' | 'CryptoPunks';
 export const getContractAbi = (type: ContractType) => {
   switch (type) {
     case 'ERC721':

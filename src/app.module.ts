@@ -8,9 +8,9 @@ import { EthereumModule } from './modules/ethereum/ethereum.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DatabaseService } from './modules/database/database.service';
 import { SqsConsumerModule } from './modules/sqs-consumer/sqs-consumer.module';
-import { NFTMetadataModule } from './modules/nft-metadata/nft-metadata.module';
 import { NFTTokensModule } from './modules/nft-tokens/nft-tokens.module';
 import { NFTContractModule } from './modules/nft-contract/nft-contract.module';
+import { RuleEngineModule } from './modules/rule-engine/rule-engine.module';
 
 @Module({
   imports: [
@@ -28,9 +28,9 @@ import { NFTContractModule } from './modules/nft-contract/nft-contract.module';
     HealthModule,
     EthereumModule,
     SqsConsumerModule,
-    NFTMetadataModule,
     NFTTokensModule,
     NFTContractModule,
+    RuleEngineModule,
   ],
   controllers: [],
   providers: [],

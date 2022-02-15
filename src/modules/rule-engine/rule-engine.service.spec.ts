@@ -1,14 +1,14 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { NFTMetadataService } from './nft-metadata.service';
+import { RuleEngineService } from './rule-engine.service';
 import configuration from '../configuration';
 import { NFTContractService } from '../nft-contract/nft-contract.service';
 import { NFTTokensService } from '../nft-tokens/nft-tokens.service';
 import { EthereumService } from '../ethereum/ethereum.service';
 import { NFTTokensDTO } from '../nft-tokens/dto/nft-tokens.dto';
 
-describe('NFT Metadata', () => {
-  let service: NFTMetadataService;
+describe('Rule Engine Test', () => {
+  let service: RuleEngineService;
   let nftContractService: NFTContractService;
   let nftTokensService: NFTTokensService;
 
@@ -23,7 +23,7 @@ describe('NFT Metadata', () => {
         }),
       ],
       providers: [
-        NFTMetadataService,
+        RuleEngineService,
         NFTContractService,
         EthereumService,
         {
@@ -35,12 +35,12 @@ describe('NFT Metadata', () => {
       ],
     }).compile();
 
-    service = module.get<NFTMetadataService>(NFTMetadataService);
+    service = module.get<RuleEngineService>(RuleEngineService);
     nftContractService = module.get<NFTContractService>(NFTContractService);
     nftTokensService = module.get<NFTTokensService>(NFTTokensService);
   });
 
-  it('should save fetch error when contract is invalid', async () => {
+  it('Invalidated - should save fetch error when contract is invalid', async () => {
     const contractAddress = '0xe51Aac67b09EaEd6d3D43e794D6bAe679Cbe09D8';
     const contractType = 'ERC721';
     const tokenId = '0';
@@ -64,7 +64,7 @@ describe('NFT Metadata', () => {
     expect(isSaved).toBe(true);
   });
 
-  it('should save fetch error when fetching metadata failed', async () => {
+  it('Invalidated - should save fetch error when fetching metadata failed', async () => {
     const contractAddress = '0xe51Aac67b09EaEd6d3D43e794D6bAe679Cbe09D8';
     const contractType = 'ERC721';
     const tokenId = '0';
@@ -87,7 +87,7 @@ describe('NFT Metadata', () => {
     expect(isSaved).toBe(true);
   });
 
-  it('should get token metadata successfully', async () => {
+  it('Standard NFT - should get token metadata successfully', async () => {
     const contractAddress = '0xe51Aac67b09EaEd6d3D43e794D6bAe679Cbe09D8';
     const contractType = 'ERC721';
     const tokenId = '0';
@@ -109,7 +109,7 @@ describe('NFT Metadata', () => {
     await service.FetchNFTMetadata(contractAddress, contractType, tokenId);
     expect(isSaved).toBe(true);
   });
-  it('should get token metadata successfully when nft is ERC1155', async () => {
+  it('Opensea Shared Storefront - should get token metadata successfully when nft is ERC1155', async () => {
     const contractAddress = '0x495f947276749Ce646f68AC8c248420045cb7b5e';
     const contractType = 'ERC1155';
     const tokenId =
@@ -119,11 +119,6 @@ describe('NFT Metadata', () => {
       contractAddress,
       tokenId,
     };
-    jest.spyOn(nftContractService, 'getTokenUri').mockReturnValueOnce({
-      success: true,
-      tokenUri:
-        'https://api.opensea.io/api/v1/metadata/0x495f947276749Ce646f68AC8c248420045cb7b5e/0x{id}',
-    } as any);
     jest
       .spyOn(nftTokensService, 'updateOne')
       .mockImplementationOnce((tokenDto) => {
@@ -133,15 +128,86 @@ describe('NFT Metadata', () => {
     await service.FetchNFTMetadata(contractAddress, contractType, tokenId);
     expect(isSaved).toBe(true);
   });
-  it('should get token metadata successfully when nft is ERC1155 and metadata is stored on ipfs', async () => {
-    const contractAddress = '0xd07dc4262BCDbf85190C01c996b4C06a461d2430';
-    const contractType = 'ERC1155';
-    const tokenId = '731864';
+  it('Cryptokitties - should get token metadata successfully', async () => {
+    const contractAddress = '0x06012c8cf97BEaD5deAe237070F9587f8E7A266d';
+    const contractType = 'ERC721';
+    const tokenId = '229795';
     let isSaved = false;
     const tokenDto: NFTTokensDTO = {
       contractAddress,
       tokenId,
     };
+    jest
+      .spyOn(nftTokensService, 'updateOne')
+      .mockImplementationOnce((tokenDto) => {
+        isSaved = !!tokenDto.metadata;
+        return Promise.resolve();
+      });
+    await service.FetchNFTMetadata(contractAddress, contractType, tokenId);
+    expect(isSaved).toBe(true);
+  });
+  it('Cryptopunks - should get token metadata successfully', async () => {
+    const contractAddress = '0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB';
+    const contractType = 'CryptoPunks';
+    const tokenId = '3102';
+    let isSaved = false;
+    const tokenDto: NFTTokensDTO = {
+      contractAddress,
+      tokenId,
+    };
+    jest
+      .spyOn(nftTokensService, 'updateOne')
+      .mockImplementationOnce((tokenDto) => {
+        isSaved = !!tokenDto.metadata;
+        return Promise.resolve();
+      });
+    await service.FetchNFTMetadata(contractAddress, contractType, tokenId);
+    expect(isSaved).toBe(true);
+  });
+
+  it('Decentraland - should get token metadata successfully', async () => {
+    const contractAddress = '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';
+    const contractType = 'ERC721';
+    const tokenId = '9527906273786276976974489008089509920694';
+    let isSaved = false;
+    const tokenDto: NFTTokensDTO = {
+      contractAddress,
+      tokenId,
+    };
+    jest
+      .spyOn(nftTokensService, 'updateOne')
+      .mockImplementationOnce((tokenDto) => {
+        isSaved = !!tokenDto.metadata;
+        return Promise.resolve();
+      });
+    await service.FetchNFTMetadata(contractAddress, contractType, tokenId);
+    expect(isSaved).toBe(true);
+  });
+
+  it('Fluf Scenes and Sounds - should get token metadata successfully', async () => {
+    const contractAddress = '0x6faD73936527D2a82AEA5384D252462941B44042';
+    const contractType = 'ERC1155';
+    const tokenId = '49';
+    let isSaved = false;
+    const tokenDto: NFTTokensDTO = {
+      contractAddress,
+      tokenId,
+    };
+    jest
+      .spyOn(nftTokensService, 'updateOne')
+      .mockImplementationOnce((tokenDto) => {
+        isSaved = !!tokenDto.metadata;
+        return Promise.resolve();
+      });
+    await service.FetchNFTMetadata(contractAddress, contractType, tokenId);
+    expect(isSaved).toBe(true);
+  });
+  it('Standard with IPFS - should get token metadata successfully when nft is ERC1155 and metadata is stored on ipfs', async () => {
+    const contractAddress = '0xd07dc4262BCDbf85190C01c996b4C06a461d2430';
+    const contractType = 'ERC1155';
+    const tokenId = '731864';
+    let isSaved = false;
+
     jest.spyOn(nftContractService, 'getTokenUri').mockReturnValueOnce({
       success: true,
       tokenUri: 'ipfs://ipfs/QmcKm9k7FB7WEwcBFQXr41tkdh3owQkwcXL8u9P67WnsQu',

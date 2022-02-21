@@ -184,24 +184,6 @@ describe('Rule Engine Test', () => {
     expect(isSaved).toBe(true);
   });
 
-  it('Fluf Scenes and Sounds - should get token metadata successfully', async () => {
-    const contractAddress = '0x6faD73936527D2a82AEA5384D252462941B44042';
-    const contractType = 'ERC1155';
-    const tokenId = '49';
-    let isSaved = false;
-    const tokenDto: NFTTokensDTO = {
-      contractAddress,
-      tokenId,
-    };
-    jest
-      .spyOn(nftTokensService, 'updateOne')
-      .mockImplementationOnce((tokenDto) => {
-        isSaved = !!tokenDto.metadata;
-        return Promise.resolve();
-      });
-    await service.FetchNFTMetadata(contractAddress, contractType, tokenId);
-    expect(isSaved).toBe(true);
-  });
   it('Standard with IPFS - should get token metadata successfully when nft is ERC1155 and metadata is stored on ipfs', async () => {
     const contractAddress = '0xd07dc4262BCDbf85190C01c996b4C06a461d2430';
     const contractType = 'ERC1155';
@@ -221,4 +203,61 @@ describe('Rule Engine Test', () => {
     await service.FetchNFTMetadata(contractAddress, contractType, tokenId);
     expect(isSaved).toBe(true);
   });
+
+  it('Special URI - should get token metadata successfully', async () => {
+    const contractAddress = '0x2E734269c869BDa3Ea6550F510d2514f2D66dE71';
+    const contractType = 'ERC1155';
+    const tokenId = '1';
+    let isSaved = false;
+
+    jest.spyOn(nftContractService, 'getTokenUri').mockReturnValueOnce({
+      success: true,
+      tokenUri: 'https://meta.strongblock.com/json/{id}.json',
+    } as any);
+    jest
+      .spyOn(nftTokensService, 'updateOne')
+      .mockImplementationOnce((tokenDto) => {
+        isSaved = !!tokenDto.metadata;
+        return Promise.resolve();
+      });
+    await service.FetchNFTMetadata(contractAddress, contractType, tokenId);
+    expect(isSaved).toBe(true);
+  });
+
+  it('Special URI (Fluf scenes) - should get token metadata successfully', async () => {
+    const contractAddress = '0x6faD73936527D2a82AEA5384D252462941B44042';
+    const contractType = 'ERC1155';
+    const tokenId = '1';
+    let isSaved = false;
+
+    jest.spyOn(nftContractService, 'getTokenUri').mockReturnValueOnce({
+      success: true,
+      tokenUri: 'https://erc1155-api.fluf.world/api/token/{id}',
+    } as any);
+    jest
+      .spyOn(nftTokensService, 'updateOne')
+      .mockImplementationOnce((tokenDto) => {
+        isSaved = !!tokenDto.metadata;
+        return Promise.resolve();
+      });
+    await service.FetchNFTMetadata(contractAddress, contractType, tokenId);
+    expect(isSaved).toBe(true);
+  });
+
+  it('Cryptofootball - should get token metadata successfully', async () => {
+    const contractAddress = '0x6e1b98153399d5E4e710c1A0b803c74d3d7F2957';
+    const contractType = 'ERC721';
+    const tokenId = '1';
+    let isSaved = false;
+
+    jest
+      .spyOn(nftTokensService, 'updateOne')
+      .mockImplementationOnce((tokenDto) => {
+        isSaved = !!tokenDto.metadata;
+        return Promise.resolve();
+      });
+    await service.FetchNFTMetadata(contractAddress, contractType, tokenId);
+    expect(isSaved).toBe(true);
+  });
+
 });

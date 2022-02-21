@@ -41,6 +41,7 @@ export class RuleEngineService {
         metadataRes = await ruleEngine.metadataHandler(
           tokenId,
           this.ethereumService.ether,
+          contractAddress,
         );
       } else {
         metadataRes = await this.standardNFTMetadata(
@@ -78,6 +79,13 @@ export class RuleEngineService {
     }
   }
 
+  private specialUriCheck(tokenUri: string, tokenId: string) {
+    if (tokenUri.includes('{id}')) {
+      return tokenUri.replace('{id}', tokenId);
+    }
+    return tokenUri;
+  }
+
   private async standardNFTMetadata(
     contractAddress: string,
     contractType: ContractType,
@@ -93,7 +101,8 @@ export class RuleEngineService {
     }
 
     const tokenUri = tokenUriRes.tokenUri;
-    const uri = this.formatTokenUri(tokenUri);
+    const formatedUri = this.formatTokenUri(tokenUri);
+    const uri = this.specialUriCheck(formatedUri, tokenId);
     const metadataRes = await fetchMetadataFromTokenUri(uri);
     if (!metadataRes.success) {
       return metadataRes;

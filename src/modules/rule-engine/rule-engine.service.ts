@@ -26,7 +26,9 @@ export class RuleEngineService {
     tokenId: string,
   ): Promise<void> {
     if (contractAddress && contractType) {
-      this.logger.debug(`Fetching metadata for contract ${contractAddress}`);
+      this.logger.debug(
+        `Fetching metadata for contract ${contractAddress} and token ${tokenId}`,
+      );
       const tokenDto: NFTTokensDTO = {
         contractAddress,
         tokenId,
@@ -51,19 +53,21 @@ export class RuleEngineService {
         );
       }
       if (metadataRes.success) {
-        this.logger.debug(`Fetched metadata for contract ${contractAddress}`);
+        this.logger.debug(
+          `Fetched metadata for contract ${contractAddress} and token ${tokenId}`,
+        );
         tokenDto.externalDomainViewUrl = metadataRes.externalDomainViewUrl;
         tokenDto.metadata = metadataRes.metadata;
       } else {
         this.logger.debug(
-          `Failed to fetch metadata for contract ${contractAddress}`,
+          `Failed to fetch metadata for contract ${contractAddress} and token ${tokenId}`,
         );
         tokenDto.metadataFetchError = metadataRes.error;
       }
 
       await this.nftTokensService.updateOne(tokenDto);
       this.logger.debug(
-        `Updated metadata in DB for contract ${contractAddress}`,
+        `Updated metadata in DB for contract ${contractAddress} and token ${tokenId}`,
       );
     }
   }

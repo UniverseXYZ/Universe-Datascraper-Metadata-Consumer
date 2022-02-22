@@ -81,6 +81,9 @@ export class SqsConsumerService
     this.logger.log(`Handle sqs message id:(${message.MessageId})`);
     const tokenMessage: TokenMessage = JSON.parse(message.Body);
     const { contractAddress, contractType, tokenId } = tokenMessage;
+    this.logger.log(
+      `Handle sqs message contractAddress:${contractAddress} tokenId:${tokenId}`,
+    );
     await this.metadataRuleEngine.FetchNFTMetadata(
       contractAddress,
       contractType,
@@ -89,19 +92,19 @@ export class SqsConsumerService
   }
 
   onError(error: Error, message: AWS.SQS.Message): Promise<void> {
-    this.logger.log(`SQS error ${error.message}`);
+    this.logger.error(`SQS error ${error.message}`);
     this.deleteMessage(message);
     return;
   }
 
   onProcessingError(error: Error, message: AWS.SQS.Message): Promise<void> {
-    this.logger.log(`Processing error ${error.message}`);
+    this.logger.error(`Processing error ${error.message}`);
     this.deleteMessage(message);
     return;
   }
 
   onTimeoutError(error: Error, message: AWS.SQS.Message): Promise<void> {
-    this.logger.log(`Timeout error ${error.message}`);
+    this.logger.error(`Timeout error ${error.message}`);
     this.deleteMessage(message);
     return;
   }
@@ -115,7 +118,7 @@ export class SqsConsumerService
     try {
       await this.queue.deleteMessage(deleteParams).promise();
     } catch (err) {
-      this.logger.log(`Deleting Message(${message?.MessageId}) ERROR`);
+      this.logger.error(`Deleting Message(${message?.MessageId}) ERROR`);
     }
   }
 }

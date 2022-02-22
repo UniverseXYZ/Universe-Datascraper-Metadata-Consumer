@@ -4,6 +4,7 @@ import { CryptopunksMetadataHandler } from './cryptopunks';
 import { DecentralandMetaDataHandler } from './decentraland';
 import { IMetadataHandler } from './interface/metadata-handler';
 import { OpenseaSharedMetaDataHandler } from './openseaSharedStorefront';
+import { SorareMetaDataHandler } from './sorare';
 
 interface IRule {
   contractAddress: string;
@@ -30,5 +31,9 @@ export const Rules: IRule[] = [
   {
     contractAddress: '0x6e1b98153399d5E4e710c1A0b803c74d3d7F2957',
     metadataHandler: CryptofootballMetadataHandler,
+  },
+  {
+    contractAddress: '0x629A673A8242c2AC4B7B8C5D8735fbeac21A6205',
+    metadataHandler: SorareMetaDataHandler,
   },
 ];

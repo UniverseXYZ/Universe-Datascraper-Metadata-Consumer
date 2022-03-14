@@ -3,7 +3,7 @@ import axios from 'axios';
 export const fetchMetadataFromTokenUri = async (tokenUri: string) => {
   let metadata;
   try {
-    const response = await axios.get(tokenUri);
+    const response = await axios.get(tokenUri, { timeout: 10000 });
     metadata = response.data;
   } catch (err) {
     console.error('Fetch metadata from token uri failed', JSON.stringify(err));

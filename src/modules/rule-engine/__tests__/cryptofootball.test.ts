@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import { EthereumNetworkType } from '../../ethereum/interface';
-import { CryptofootballMetadataHandler } from '../crptofootball';
+import { CryptofootballMetadataHandler } from '../cryptofootball';
 describe('Cryptofootball Metadata', () => {
   it('should get metadata successfully', async () => {
     const ethersProvider = new ethers.providers.InfuraProvider(

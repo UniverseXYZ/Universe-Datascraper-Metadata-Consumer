@@ -1,7 +1,8 @@
-import { CryptofootballMetadataHandler } from './crptofootball';
+import { CryptofootballMetadataHandler } from './cryptofootball';
 import { CryptoKittiesMetaDataHandler } from './cryptokitties';
 import { CryptopunksMetadataHandler } from './cryptopunks';
 import { DecentralandMetaDataHandler } from './decentraland';
+import { HashmasksMetadataHandler } from './hashmasks';
 import { IMetadataHandler } from './interface/metadata-handler';
 import { OpenseaSharedMetaDataHandler } from './openseaSharedStorefront';
 import { SorareMetaDataHandler } from './sorare';
@@ -36,4 +37,8 @@ export const Rules: IRule[] = [
     contractAddress: '0x629A673A8242c2AC4B7B8C5D8735fbeac21A6205',
     metadataHandler: SorareMetaDataHandler,
   },
+  {
+    contractAddress: '0xc2c747e0f7004f9e8817db2ca4997657a7746928',
+    metadataHandler: HashmasksMetadataHandler,
+  }
 ];

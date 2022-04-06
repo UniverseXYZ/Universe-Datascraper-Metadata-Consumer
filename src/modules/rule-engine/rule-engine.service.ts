@@ -7,6 +7,7 @@ import { NFTTokensDTO } from '../nft-tokens/dto/nft-tokens.dto';
 import { ConfigService } from '@nestjs/config';
 import { Rules } from './rules';
 import { EthereumService } from '../ethereum/ethereum.service';
+import { EtherscanService } from '../etherscan/etherscan.service';
 import { IMetadataFetcherResponse } from './interface/metadata-handler';
 
 @Injectable()
@@ -18,6 +19,7 @@ export class RuleEngineService {
     protected readonly nftTokensService: NFTTokensService,
     protected readonly configService: ConfigService,
     protected readonly ethereumService: EthereumService,
+    protected readonly etherscanService: EtherscanService,
   ) {}
 
   async FetchNFTMetadata(
@@ -44,6 +46,7 @@ export class RuleEngineService {
           tokenId,
           this.ethereumService.ether,
           contractAddress,
+          this.etherscanService
         );
       } else {
         metadataRes = await this.standardNFTMetadata(

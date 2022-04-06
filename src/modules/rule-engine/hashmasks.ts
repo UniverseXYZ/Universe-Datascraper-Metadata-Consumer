@@ -2,18 +2,29 @@ import { ethers } from 'ethers';
 import { ERC721_ABI } from '../nft-contract/contract';
 import { EtherscanService } from '../etherscan/etherscan.service';
 import { IMetadataHandler } from './interface/metadata-handler';
-import { buildAbiReadFunction, buildAbiFunctionInput, buildAbiFunctionOutput } from '../../utils/ethereum';
+import { buildAbiReadFunction } from '../../utils/ethereum';
 
 const IPFS_BASE_URL = 'ipfs://ipfs',
-  REGISTRY_CONTRACT_ADDR = '0x185c8078285A3dE3EC9a2C203AD12853F03c462D',
-  TOKEN_ABI = [
-    // Function to get Hashmask's name based on its token ID
-    buildAbiReadFunction(
-      'tokenNameByIndex',
-      [buildAbiFunctionInput('index', 'uint256')],
-      [buildAbiFunctionOutput('name', 'string')]
-    )
-  ];
+  REGISTRY_CONTRACT_ADDR = '0x185c8078285a3de3ec9a2c203ad12853f03c462d';
+
+const REGISTRY_ABI = [
+  // Function to look up IPFS image hash based on tokenId
+  buildAbiReadFunction('getIPFSHashOfMaskId',{maskId: 'uint256'}, {ipfsHash: 'string'}),
+  // Function to get hashmask traits
+  buildAbiReadFunction('getTraitsOfMaskId', {maskId: 'uint256'}, {
+      character: 'string',
+      eyeColor: 'string',
+      item: 'string',
+      mask: 'string',
+      skinColor: 'string'
+    }
+  )  
+];
+
+const TOKEN_ABI = [
+  // Function to get Hashmask's name based on its token ID
+  buildAbiReadFunction('tokenNameByIndex', {index: 'uint256'}, {name: 'string'})
+];
 
 // Hashmask attributes via registry contract
 type RegistryAttributes = {
@@ -34,25 +45,14 @@ const getImageUrlForHash = (imageHash: string): string => {
 export const HashmasksMetadataHandler: IMetadataHandler = async (
   tokenId: string,
   provider: ethers.providers.BaseProvider,
-  contractAddress: string,
-  etherscanService: EtherscanService
+  contractAddress: string
 ) => {
+
+  const metadata: any = {};
   
-  const getAbiResult: any = await etherscanService.getContractAbi(REGISTRY_CONTRACT_ADDR),
-    metadata: {
-      name?: string,
-      image?: string,
-      attributes?: any[]
-    } = {};
-
-  if(!getAbiResult.success) {
-    console.error(`Failed to load Hashmasks registry contract ABI: ${getAbiResult.message}`);
-    return { success: false, error: getAbiResult.message };
-  }
-
   // Look up data from registry first - image hash and attributes
   try {
-    const registryContract = new ethers.Contract(REGISTRY_CONTRACT_ADDR, getAbiResult.abi, provider);
+    const registryContract = new ethers.Contract(REGISTRY_CONTRACT_ADDR, REGISTRY_ABI, provider);
   
     const attributes: RegistryAttributes = await registryContract.getTraitsOfMaskId(tokenId),
       imageHash = await registryContract.getIPFSHashOfMaskId(tokenId);

@@ -25,33 +25,33 @@ const buildAbiFunctionInputOutput = (
 	type: AbiFunctionInputOutputType
 ) : AbiFunctionInputOutput => ({ name, type });
 
-export const buildAbiFunctionInput = (name: string, type: AbiFunctionInputOutputType) : AbiFunctionInputOutput => {
-	return buildAbiFunctionInputOutput(name, type);
+const buildAbiFunctionInputsOutputs = (params: any) : AbiFunctionInputOutput[] => {
+	return Object.keys(params).map(name => buildAbiFunctionInputOutput(name, params[name]));
 }
 
-export const buildAbiFunctionOutput = (name: string, type: AbiFunctionInputOutputType) : AbiFunctionInputOutput => {
-	return buildAbiFunctionInputOutput(name, type);
-}
+// Semantic sugar for now but could diverge in the future
+export const buildAbiFunctionInputs = buildAbiFunctionInputsOutputs;
+export const buildAbiFunctionOutputs = buildAbiFunctionInputsOutputs;
 
 export const buildAbiFunction = (
 	name: string,
 	stateMutability: AbiFunctionStateMutability,
 	constant: boolean,
 	payable: boolean,
-	inputs: AbiFunctionInputOutput[],
-	outputs: AbiFunctionInputOutput[]
+	inputs: any,
+	outputs: any
 ) : AbiFunction => ({
 	type: 'function',
 	name,
 	stateMutability,
 	constant,
 	payable,
-	inputs,
-	outputs
+	inputs: buildAbiFunctionInputs(inputs),
+	outputs: buildAbiFunctionOutputs(outputs)
 });
 
 export const buildAbiReadFunction = (
 	name: string,
-	inputs: AbiFunctionInputOutput[],
-	outputs: AbiFunctionInputOutput[]
+	inputs: any,
+	outputs: any
 ) : AbiFunction => buildAbiFunction(name, 'pure', true, false, inputs, outputs);

@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { EtherscanService } from './etherscan.service';
 
 @Module({
-  providers: [EtherscanService],
-  exports: [EtherscanService]
+  providers: [EtherscanService]
 })
 export class EtherscanModule {}

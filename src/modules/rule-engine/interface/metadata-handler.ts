@@ -1,5 +1,4 @@
 import { ethers } from 'ethers';
-import { EtherscanService } from '../../etherscan/etherscan.service';
 
 export interface IMetadataFetcherResponse {
   success: boolean;

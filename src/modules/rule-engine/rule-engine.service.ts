@@ -7,7 +7,6 @@ import { NFTTokensDTO } from '../nft-tokens/dto/nft-tokens.dto';
 import { ConfigService } from '@nestjs/config';
 import { Rules } from './rules';
 import { EthereumService } from '../ethereum/ethereum.service';
-import { EtherscanService } from '../etherscan/etherscan.service';
 import { IMetadataFetcherResponse } from './interface/metadata-handler';
 
 @Injectable()

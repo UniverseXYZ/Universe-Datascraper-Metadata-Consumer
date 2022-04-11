@@ -1,6 +1,5 @@
 import { ethers } from 'ethers';
 import { ERC721_ABI } from '../nft-contract/contract';
-import { EtherscanService } from '../etherscan/etherscan.service';
 import { IMetadataHandler } from './interface/metadata-handler';
 import { buildAbi, buildAbiReadFunction } from '../../utils/ethereum';
 

@@ -14,7 +14,7 @@ describe('Hashmasks Metadata', () => {
         eyeColor: 'Dark',
         skinColor: 'Light',
         item: 'No Item',
-        /*
+        /* These attributes are not available on chain
         background: 'Doodle',
         glyph: 'Greek Symbol'
         */

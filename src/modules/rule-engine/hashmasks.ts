@@ -14,10 +14,10 @@ const REGISTRY_ABI = buildAbi(
   buildAbiReadFunction('getTraitsOfMaskId', {maskId: 'uint256'}, [
       // These must be listed in order they're returned
       {character: 'string'},
-      {eyeColor: 'string'},
-      {item: 'string'},
       {mask: 'string'},
-      {skinColor: 'string'}
+      {eyeColor: 'string'},
+      {skinColor: 'string'},
+      {item: 'string'},
     ]
   )  
 );
@@ -80,6 +80,8 @@ export const HashmasksMetadataHandler: IMetadataHandler = async (
     const tokenContract = new ethers.Contract(contractAddress, TOKEN_ABI, provider);
 
     metadata.name = await tokenContract.tokenNameByIndex(tokenId);
+
+    console.dir(metadata);
 
     return { success: true, metadata };
   } catch (error) {

@@ -38,7 +38,7 @@ export const Rules: IRule[] = [
     metadataHandler: SorareMetaDataHandler,
   },
   {
-    contractAddress: '0xc2c747e0f7004f9e8817db2ca4997657a7746928',
+    contractAddress: '0xC2C747E0F7004F9E8817Db2ca4997657a7746928',
     metadataHandler: HashmasksMetadataHandler,
   }
 ];

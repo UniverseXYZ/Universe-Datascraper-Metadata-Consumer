@@ -4,7 +4,7 @@ import { IMetadataHandler } from './interface/metadata-handler';
 import { buildAbi, buildAbiReadFunction } from '../../utils/ethereum';
 
 const IPFS_BASE_URL = 'ipfs://ipfs',
-  REGISTRY_CONTRACT_ADDR = '0x185c8078285a3de3ec9a2c203ad12853f03c462d';
+  REGISTRY_CONTRACT_ADDR = '0x185c8078285A3dE3EC9a2C203AD12853F03c462D';
 
 const REGISTRY_ABI = buildAbi(
   // Function to look up IPFS image hash based on tokenId

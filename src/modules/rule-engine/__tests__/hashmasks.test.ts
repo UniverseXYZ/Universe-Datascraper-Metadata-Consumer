@@ -5,7 +5,7 @@ import { HashmasksMetadataHandler } from '../hashmasks';
 describe('Hashmasks Metadata', () => {
   it('should get metadata successfully', async () => {
 
-    const tokenAddr = '0xc2c747e0f7004f9e8817db2ca4997657a7746928',
+    const tokenAddr = '0xC2C747E0F7004F9E8817Db2ca4997657a7746928',
       tokenId = '6890',
       expectedImageUri = 'ipfs://ipfs/Qme55fLRNq2mKcjkvfp8SP9EitWqVa7Do3P8HmuykN1mJ7',
       expectedMetadata = {

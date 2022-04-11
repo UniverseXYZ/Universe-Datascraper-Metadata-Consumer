@@ -268,7 +268,7 @@ describe('Rule Engine Test', () => {
 
     jest
       .spyOn(nftTokensService, 'updateOne')
-      .mockImplementationOnce((tokenDto) => {
+      .mockImplementationOnce(tokenDto => {
         isSaved = !!tokenDto.metadata;
         return Promise.resolve();
       });

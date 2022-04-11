@@ -2,37 +2,38 @@ import { ethers } from 'ethers';
 import { ERC721_ABI } from '../nft-contract/contract';
 import { EtherscanService } from '../etherscan/etherscan.service';
 import { IMetadataHandler } from './interface/metadata-handler';
-import { buildAbiReadFunction } from '../../utils/ethereum';
+import { buildAbi, buildAbiReadFunction } from '../../utils/ethereum';
 
 const IPFS_BASE_URL = 'ipfs://ipfs',
   REGISTRY_CONTRACT_ADDR = '0x185c8078285a3de3ec9a2c203ad12853f03c462d';
 
-const REGISTRY_ABI = [
+const REGISTRY_ABI = buildAbi(
   // Function to look up IPFS image hash based on tokenId
   buildAbiReadFunction('getIPFSHashOfMaskId',{maskId: 'uint256'}, {ipfsHash: 'string'}),
   // Function to get hashmask traits
-  buildAbiReadFunction('getTraitsOfMaskId', {maskId: 'uint256'}, {
-      character: 'string',
-      eyeColor: 'string',
-      item: 'string',
-      mask: 'string',
-      skinColor: 'string'
-    }
+  buildAbiReadFunction('getTraitsOfMaskId', {maskId: 'uint256'}, [
+      // These must be listed in order they're returned
+      {character: 'string'},
+      {eyeColor: 'string'},
+      {item: 'string'},
+      {mask: 'string'},
+      {skinColor: 'string'}
+    ]
   )  
-];
+);
 
-const TOKEN_ABI = [
+const TOKEN_ABI = buildAbi(
   // Function to get Hashmask's name based on its token ID
   buildAbiReadFunction('tokenNameByIndex', {index: 'uint256'}, {name: 'string'})
-];
+);
 
 // Hashmask attributes via registry contract
 type RegistryAttributes = {
     character: string,
-    eyeColor: string,
-    item: string,
     mask: string,
+    eyeColor: string,
     skinColor: string,
+    item: string,
 }
 
 /**
@@ -49,7 +50,7 @@ export const HashmasksMetadataHandler: IMetadataHandler = async (
 ) => {
 
   const metadata: any = {};
-  
+
   // Look up data from registry first - image hash and attributes
   try {
     const registryContract = new ethers.Contract(REGISTRY_CONTRACT_ADDR, REGISTRY_ABI, provider);
@@ -78,7 +79,7 @@ export const HashmasksMetadataHandler: IMetadataHandler = async (
   try {
     const tokenContract = new ethers.Contract(contractAddress, TOKEN_ABI, provider);
 
-    metadata.name = tokenContract.tokenNameByIndex(tokenId);
+    metadata.name = await tokenContract.tokenNameByIndex(tokenId);
 
     return { success: true, metadata };
   } catch (error) {

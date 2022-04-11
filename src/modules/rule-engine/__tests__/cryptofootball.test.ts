@@ -16,7 +16,6 @@ describe('Cryptofootball Metadata', () => {
       ethersProvider,
       contractAddress,
     );
-    console.log(res);
     const name = res.metadata.name;
     expect(expected_name).toBe(name);
   });

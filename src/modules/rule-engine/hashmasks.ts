@@ -52,7 +52,7 @@ export const HashmasksMetadataHandler: IMetadataHandler = async (
 
   // Get image URL
   metadata.image = getImageUrlForTokenId(tokenId);
-  console.debug(metadata.image);
+  
   // Look up attributes
   try {
     const registryContract = new ethers.Contract(REGISTRY_CONTRACT_ADDR, REGISTRY_ABI, provider);

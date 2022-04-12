@@ -50,6 +50,9 @@ export const HashmasksMetadataHandler: IMetadataHandler = async (
 
   const metadata: any = {};
 
+  // Get image URL
+  metadata.image = getImageUrlForTokenId(tokenId);
+  console.debug(metadata.image);
   // Look up attributes
   try {
     const registryContract = new ethers.Contract(REGISTRY_CONTRACT_ADDR, REGISTRY_ABI, provider);
@@ -61,8 +64,7 @@ export const HashmasksMetadataHandler: IMetadataHandler = async (
       }));
 
     Object.assign(metadata, {
-      attributes: attributesFormatted,
-      image: getImageUrlForTokenId(tokenId)
+      attributes: attributesFormatted      
     });
   } catch (error) {
     console.error(

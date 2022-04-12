@@ -55,10 +55,14 @@ export const HashmasksMetadataHandler: IMetadataHandler = async (
     const registryContract = new ethers.Contract(REGISTRY_CONTRACT_ADDR, REGISTRY_ABI, provider);
   
     const attributes: RegistryAttributes = await registryContract.getTraitsOfMaskId(tokenId),
-      imageHash = await registryContract.getIPFSHashOfMaskId(tokenId);
+      imageHash = await registryContract.getIPFSHashOfMaskId(tokenId),
+      attributesFormatted = Object.keys(attributes).map(trait => ({
+        trait_type: trait,
+        value: attributes[trait]
+      }));
 
     Object.assign(metadata, {
-      attributes,
+      attributes: attributesFormatted,
       image: getImageUrlForHash(imageHash)
     });
   } catch (error) {

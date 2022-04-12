@@ -1,47 +1,23 @@
-export const ERC721_ABI = [
-  {
-    constant: true,
-    inputs: [
-      {
-        name: 'tokenId',
-        type: 'uint256',
-      },
-    ],
-    name: 'tokenURI',
-    outputs: [
-      {
-        name: '',
-        type: 'string',
-      },
-    ],
-    payable: false,
-    stateMutability: 'view',
-    type: 'function',
-  },
-] as any;
+import { buildAbi, buildAbiReadFunction } from '../../utils/ethereum';
 
-const ERC1155_ABI = [
-  {
-    constant: true,
-    inputs: [
-      {
-        name: 'id',
-        type: 'uint256',
-      },
-    ],
-    name: 'uri',
-    outputs: [
-      {
-        name: '',
-        type: 'string',
-      },
-    ],
-    payable: false,
-    stateMutability: 'view',
-    type: 'function',
-  },
-] as any;
+export const ERC721_ABI = buildAbi(
+  buildAbiReadFunction(
+    'tokenURI',
+    {tokenId: 'uint256'},
+    {uri: 'string'}
+  )
+) as any;
+
+const ERC1155_ABI = buildAbi(
+  buildAbiReadFunction(
+    'uri',
+    {id: 'uint256'},
+    {uri: 'string'}
+  )
+) as any;
+
 export type ContractType = 'ERC721' | 'ERC1155' | 'CryptoPunks';
+
 export const getContractAbi = (type: ContractType) => {
   switch (type) {
     case 'ERC721':

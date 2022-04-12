@@ -1,45 +1,19 @@
 import { ethers } from 'ethers';
 import { IMetadataHandler } from './interface/metadata-handler';
-const CRYPTOPUNKS_ABI = [
-  {
-    constant: true,
-    inputs: [
-      {
-        name: 'index',
-        type: 'uint16',
-      },
-    ],
-    name: 'punkAttributes',
-    outputs: [
-      {
-        name: 'text',
-        type: 'string',
-      },
-    ],
-    payable: false,
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    constant: true,
-    inputs: [
-      {
-        name: 'index',
-        type: 'uint16',
-      },
-    ],
-    name: 'punkImageSvg',
-    outputs: [
-      {
-        name: 'svg',
-        type: 'string',
-      },
-    ],
-    payable: false,
-    stateMutability: 'view',
-    type: 'function',
-  },
-] as any;
+import { buildAbi, buildAbiReadFunction } from '../../utils/ethereum';
+
+const CRYPTOPUNKS_ABI = buildAbi(
+  buildAbiReadFunction(
+    'punkAttributes',
+    {index: 'uint16'},
+    {text: 'string'}
+  ),
+  buildAbiReadFunction(
+    'punkImageSvg',
+    {index: 'uint16'},
+    {svg: 'string'}
+  )
+) as any;
 
 const CRYPTOPUNKS_METADATA_ADDRESS =
   '0x16F5A35647D6F03D5D3da7b35409D65ba03aF3B2';

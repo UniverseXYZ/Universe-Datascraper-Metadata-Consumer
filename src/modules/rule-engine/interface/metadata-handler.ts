@@ -11,6 +11,6 @@ export interface IMetadataHandler {
   (
     tokenId: string,
     provider?: ethers.providers.BaseProvider,
-    contractAddress?: string,
+    contractAddress?: string
   ): Promise<IMetadataFetcherResponse>;
 }

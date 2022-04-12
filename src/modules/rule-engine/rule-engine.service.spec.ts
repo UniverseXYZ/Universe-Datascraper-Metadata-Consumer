@@ -260,4 +260,20 @@ describe('Rule Engine Test', () => {
     expect(isSaved).toBe(true);
   });
 
+  it('Hashmasks - should get metadata successfully', async () => {
+    const contractAddress = '0xc2c747e0f7004f9e8817db2ca4997657a7746928';
+    const contractType = 'ERC721';
+    const tokenId = '6';
+    let isSaved = false;
+
+    jest
+      .spyOn(nftTokensService, 'updateOne')
+      .mockImplementationOnce(tokenDto => {
+        isSaved = !!tokenDto.metadata;
+        return Promise.resolve();
+      });
+    await service.FetchNFTMetadata(contractAddress, contractType, tokenId);
+    expect(isSaved).toBe(true);
+  });
+
 });

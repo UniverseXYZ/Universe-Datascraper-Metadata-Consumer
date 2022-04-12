@@ -17,7 +17,7 @@ export class RuleEngineService {
     protected readonly nftContractService: NFTContractService,
     protected readonly nftTokensService: NFTTokensService,
     protected readonly configService: ConfigService,
-    protected readonly ethereumService: EthereumService,
+    protected readonly ethereumService: EthereumService
   ) {}
 
   async FetchNFTMetadata(
@@ -43,7 +43,7 @@ export class RuleEngineService {
         metadataRes = await ruleEngine.metadataHandler(
           tokenId,
           this.ethereumService.ether,
-          contractAddress,
+          contractAddress
         );
       } else {
         metadataRes = await this.standardNFTMetadata(

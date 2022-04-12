@@ -22,4 +22,5 @@ export default () => ({
   etherscan_api_key: process.env.ETHERSCAN_API_KEY,
   ipfs_gateway: process.env.IPFS_GATEWAY,
   opensea_erc_1155_api: process.env.SPECIAL_CASES_OPEN_SEA_1155_URI,
+  arweave_base_url: process.env.ARWEAVE_BASE_URL
 });

@@ -2,13 +2,12 @@ import { ethers } from 'ethers';
 import { ERC721_ABI } from '../nft-contract/contract';
 import { IMetadataHandler } from './interface/metadata-handler';
 import { buildAbi, buildAbiReadFunction } from '../../utils/ethereum';
+import { getArweaveMapping, HashmaskArweaveMapping } from './interface/hashmasks-arweave-mapping';
 
-const IPFS_BASE_URL = 'ipfs://ipfs',
+const ARWEAVE_BASE_URL = process.env.ARWEAVE_BASE_URL,
   REGISTRY_CONTRACT_ADDR = '0x185c8078285A3dE3EC9a2C203AD12853F03c462D';
 
 const REGISTRY_ABI = buildAbi(
-  // Function to look up IPFS image hash based on tokenId
-  buildAbiReadFunction('getIPFSHashOfMaskId',{maskId: 'uint256'}, {ipfsHash: 'string'}),
   // Function to get hashmask traits
   buildAbiReadFunction('getTraitsOfMaskId', {maskId: 'uint256'}, [
       // These must be listed in order they're returned
@@ -26,7 +25,7 @@ const TOKEN_ABI = buildAbi(
   buildAbiReadFunction('tokenNameByIndex', {index: 'uint256'}, {name: 'string'})
 );
 
-// Hashmask attributes via registry contract
+// Hashmask attributes available via registry contract
 type RegistryAttributes = {
     character: string,
     mask: string,
@@ -36,10 +35,11 @@ type RegistryAttributes = {
 }
 
 /**
- * Generate an IPFS URL for a given hash
+ * Generate an Arweave URL for a given tokenId
  */
-const getImageUrlForHash = (imageHash: string): string => {
-  return `${IPFS_BASE_URL}/${imageHash}`;
+const getImageUrlForTokenId = (tokenId: string): string => {
+  const mapping: HashmaskArweaveMapping = getArweaveMapping(parseInt(tokenId));
+  return `${ARWEAVE_BASE_URL}/${mapping.arweave}`;
 }
 
 export const HashmasksMetadataHandler: IMetadataHandler = async (
@@ -50,16 +50,19 @@ export const HashmasksMetadataHandler: IMetadataHandler = async (
 
   const metadata: any = {};
 
-  // Look up data from registry first - image hash and attributes
+  // Look up attributes
   try {
     const registryContract = new ethers.Contract(REGISTRY_CONTRACT_ADDR, REGISTRY_ABI, provider);
   
     const attributes: RegistryAttributes = await registryContract.getTraitsOfMaskId(tokenId),
-      imageHash = await registryContract.getIPFSHashOfMaskId(tokenId);
+      attributesFormatted = Object.keys(attributes).map(trait => ({
+        trait_type: trait,
+        value: attributes[trait]
+      }));
 
     Object.assign(metadata, {
-      attributes,
-      image: getImageUrlForHash(imageHash)
+      attributes: attributesFormatted,
+      image: getImageUrlForTokenId(tokenId)
     });
   } catch (error) {
     console.error(

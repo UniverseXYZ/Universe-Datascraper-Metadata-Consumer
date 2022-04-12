@@ -7,7 +7,8 @@ describe('Hashmasks Metadata', () => {
 
     const tokenAddr = '0xC2C747E0F7004F9E8817Db2ca4997657a7746928',
       tokenId = '6890',
-      expectedImageUri = 'ipfs://ipfs/Qme55fLRNq2mKcjkvfp8SP9EitWqVa7Do3P8HmuykN1mJ7',
+      arweavePath = 'qCnsXwLUKTa2lRgRTlsmwZS5uMN_LiuAX2XQHScPxDQ',
+      expectedImageUri = `${process.env.ARWEAVE_BASE_URL}/${arweavePath}`,
       expectedMetadata = [
         { trait_type: 'character', value: 'Male' },
         { trait_type: 'mask', value: 'Doodle' },

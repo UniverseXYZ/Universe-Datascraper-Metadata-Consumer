@@ -58,6 +58,11 @@ export class RuleEngineService {
         );
         tokenDto.externalDomainViewUrl = metadataRes.externalDomainViewUrl;
         tokenDto.metadata = metadataRes.metadata;
+        // Set flag to indicate to the MediaFiles producer that the metadata has
+        // been populated and the media files are ready to/need to be updated.
+        // This is only necessary to handle "manual" metadata refreshes initiated
+        // by users in the marketplace UI. See m-4589
+        tokenDto.needToRefreshMediaFiles = true;
       } else {
         this.logger.debug(
           `Failed to fetch metadata for contract ${contractAddress} and token ${tokenId}`,

@@ -45,7 +45,11 @@ export class EthereumService {
     const allProviders: ethers.providers.BaseProvider[] = [infuraProvider, alchemyProvider, chainStackProvider, quicknodeProvider]
     const definedProviders: ethers.providers.BaseProvider[] = allProviders.filter(x => x !== undefined);
 
-    const ethersProvider: ethers.providers.FallbackProvider = new ethers.providers.FallbackProvider(definedProviders, quorum);
+    const ethersProvider: ethers.providers.FallbackProvider = new ethers.providers.FallbackProvider( [infuraProvider,  {
+      provider: alchemyProvider,
+      priority: 2,
+      weight: 2,
+    }, chainStackProvider], quorum);
     this.ether = ethersProvider;
   }
 }

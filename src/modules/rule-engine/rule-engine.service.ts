@@ -64,15 +64,16 @@ export class RuleEngineService {
         // by users in the marketplace UI. See m-4589
         tokenDto.needToRefreshMediaFiles = true;
       } else {
-        this.logger.debug(
-          `Failed to fetch metadata for contract ${contractAddress} and token ${tokenId}`,
+        this.logger.warn(
+          `Failed to fetch metadata for contract ${contractAddress} and token ${tokenId}: ${metadataRes.error}`,
         );
         tokenDto.metadataFetchError = metadataRes.error;
       }
 
       await this.nftTokensService.updateOne(tokenDto);
+      
       this.logger.debug(
-        `Updated metadata in DB for contract ${contractAddress} and token ${tokenId}`,
+        `Updated DB for contract ${contractAddress}, token ${tokenId}`,
       );
     }
   }

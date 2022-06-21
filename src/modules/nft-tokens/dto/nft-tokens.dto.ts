@@ -4,4 +4,5 @@ export interface NFTTokensDTO {
   externalDomainViewUrl?: string;
   metadata?: any;
   metadataFetchError?: string;
+  needToRefreshMediaFiles?: boolean;
 }

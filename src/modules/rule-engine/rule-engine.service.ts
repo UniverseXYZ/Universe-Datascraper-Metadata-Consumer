@@ -43,7 +43,7 @@ export class RuleEngineService {
         metadataRes = await ruleEngine.metadataHandler(
           tokenId,
           this.ethereumService.ether,
-          contractAddress
+          contractAddress,
         );
       } else {
         metadataRes = await this.standardNFTMetadata(

@@ -30,13 +30,15 @@ export class NFTTokensService {
     // Exit if there is no metadata
     if (!attributes) return;
 
-    const token = await this.nftTokensModel.findOne({
-      contractAddress,
-      tokenId,
-    });
-    const contract = await this.nftCollectionAttributesModel.findOne({
-      contractAddress,
-    });
+    const [token, contract] = await Promise.all([
+      this.nftTokensModel.findOne({
+        contractAddress,
+        tokenId,
+      }),
+      this.nftCollectionAttributesModel.findOne({
+        contractAddress,
+      }),
+    ]);
     let contractAttributes = contract?.attributes;
 
     if (token && token?.metadata?.attributes) {

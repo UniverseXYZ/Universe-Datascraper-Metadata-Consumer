@@ -27,83 +27,95 @@ export class NFTTokensService {
       { ...res },
     );
 
-    if (attributes) {
-      const token = await this.nftTokensModel.findOne({
-        contractAddress,
-        tokenId,
-      });
-      const contract = await this.nftCollectionAttributesModel.findOne({
-        contractAddress,
-      });
-      let contractAttributes = contract?.attributes;
+    // Exit if there is no metadata
+    if (!attributes) return;
 
-      if (token && token?.metadata?.attributes) {
-        if (!isEmpty(contractAttributes)) {
-          token.metadata.attributes.forEach(({ trait_type, value }) => {
-            if (isEmpty(contractAttributes[trait_type][value])) {
-              return;
-            }
-            const index = contractAttributes[trait_type][value].indexOf(
-              token.tokenId,
-            );
-            if (index > -1) {
-              contractAttributes[trait_type][value].splice(index, 1);
-            }
-          });
+    const token = await this.nftTokensModel.findOne({
+      contractAddress,
+      tokenId,
+    });
+    const contract = await this.nftCollectionAttributesModel.findOne({
+      contractAddress,
+    });
+    let contractAttributes = contract?.attributes;
 
-          attributes.forEach(({ trait_type, value }) => {
-            contractAttributes[trait_type] =
-              contractAttributes[trait_type] || {};
-            contractAttributes[trait_type][value] = contractAttributes[
-              trait_type
-            ][value].push(token.tokenId) || [token.tokenId];
-          });
-        } else {
-          contractAttributes = {};
-          attributes.forEach(({ trait_type, value }) => {
-            contractAttributes[trait_type] =
-              contractAttributes[trait_type] || {};
-            contractAttributes[trait_type][value] = contractAttributes[
-              trait_type
-            ][value].push(token.tokenId) || [token.tokenId];
-          });
-        }
+    if (token && token?.metadata?.attributes) {
+      if (!isEmpty(contractAttributes)) {
+        token.metadata.attributes.forEach(({ trait_type, value }) => {
+          if (isEmpty(contractAttributes[trait_type][value])) {
+            return;
+          }
+          //remove the tokenId from trait types with its old values
+          const index = contractAttributes[trait_type][value].indexOf(
+            token.tokenId,
+          );
+          if (index > -1) {
+            contractAttributes[trait_type][value].splice(index, 1);
+          }
+        });
+        this.updateCollectionAttributes(
+          contractAttributes,
+          token.tokenId,
+          attributes,
+        );
+        attributes.forEach(({ trait_type, value }) => {
+          contractAttributes[trait_type] = contractAttributes[trait_type] || {};
+          contractAttributes[trait_type][value] = contractAttributes[
+            trait_type
+          ][value].push(token.tokenId) || [token.tokenId];
+        });
       } else {
-        if (!isEmpty(contractAttributes)) {
-          attributes.forEach(({ trait_type, value }) => {
-            contractAttributes[trait_type] =
-              contractAttributes[trait_type] || {};
-            contractAttributes[trait_type][value] = contractAttributes[
-              trait_type
-            ][value].push(token.tokenId) || [token.tokenId];
-          });
-        } else {
-          contractAttributes = {};
-          attributes.forEach(({ trait_type, value }) => {
-            contractAttributes[trait_type] =
-              contractAttributes[trait_type] || {};
-            contractAttributes[trait_type][value] = contractAttributes[
-              trait_type
-            ][value].push(token.tokenId) || [token.tokenId];
-          });
-        }
+        contractAttributes = {};
+        this.updateCollectionAttributes(
+          contractAttributes,
+          token.tokenId,
+          attributes,
+        );
       }
-
-      if (contract) {
-        contract.attributes = contractAttributes;
-        await contract.save();
+    } else {
+      if (!isEmpty(contractAttributes)) {
+        this.updateCollectionAttributes(
+          contractAttributes,
+          token.tokenId,
+          attributes,
+        );
       } else {
-        const nftCollection = {
-          contractAddress: contractAddress,
-          attributes: contractAttributes,
-        };
-
-        await this.nftCollectionAttributesModel.updateOne(
-          { contractAddress: contractAddress },
-          { $set: nftCollection },
-          { upsert: true },
+        contractAttributes = {};
+        this.updateCollectionAttributes(
+          contractAttributes,
+          token.tokenId,
+          attributes,
         );
       }
     }
+
+    if (contract) {
+      contract.attributes = contractAttributes;
+      await contract.save();
+    } else {
+      const nftCollection = {
+        contractAddress: contractAddress,
+        attributes: contractAttributes,
+      };
+
+      await this.nftCollectionAttributesModel.updateOne(
+        { contractAddress: contractAddress },
+        { $set: nftCollection },
+        { upsert: true },
+      );
+    }
+  }
+
+  private async updateCollectionAttributes(
+    contractAttributes,
+    tokenId,
+    attributes,
+  ) {
+    attributes.forEach(({ trait_type, value }) => {
+      contractAttributes[trait_type] = contractAttributes[trait_type] || {};
+      contractAttributes[trait_type][value] = contractAttributes[trait_type][
+        value
+      ].push(tokenId) || [tokenId];
+    });
   }
 }

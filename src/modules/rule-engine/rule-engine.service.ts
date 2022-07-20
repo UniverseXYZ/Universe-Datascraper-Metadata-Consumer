@@ -71,7 +71,7 @@ export class RuleEngineService {
       }
 
       await this.nftTokensService.updateOne(tokenDto);
-      
+
       this.logger.debug(
         `Updated DB for contract ${contractAddress}, token ${tokenId}`,
       );

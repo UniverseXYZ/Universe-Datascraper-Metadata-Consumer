@@ -21,6 +21,10 @@ export class NFTTokensService {
   async updateOne(nftToken: NFTTokensDTO) {
     const { contractAddress, tokenId, ...res } = nftToken;
     const attributes = res?.metadata?.attributes;
+    const token = await this.nftTokensModel.findOne({
+      contractAddress,
+      tokenId,
+    });
 
     await this.nftTokensModel.updateOne(
       { contractAddress, tokenId },
@@ -30,15 +34,10 @@ export class NFTTokensService {
     // Exit if there is no metadata
     if (!attributes) return;
 
-    const [token, contract] = await Promise.all([
-      this.nftTokensModel.findOne({
-        contractAddress,
-        tokenId,
-      }),
-      this.nftCollectionAttributesModel.findOne({
-        contractAddress,
-      }),
-    ]);
+    const contract = await this.nftCollectionAttributesModel.findOne({
+      contractAddress,
+    });
+
     let contractAttributes = contract?.attributes;
 
     if (token && token?.metadata?.attributes) {
@@ -55,17 +54,12 @@ export class NFTTokensService {
             contractAttributes[trait_type][value].splice(index, 1);
           }
         });
+
         this.updateCollectionAttributes(
           contractAttributes,
           token.tokenId,
           attributes,
         );
-        attributes.forEach(({ trait_type, value }) => {
-          contractAttributes[trait_type] = contractAttributes[trait_type] || {};
-          contractAttributes[trait_type][value] = contractAttributes[
-            trait_type
-          ][value].push(token.tokenId) || [token.tokenId];
-        });
       } else {
         contractAttributes = {};
         this.updateCollectionAttributes(
@@ -90,21 +84,22 @@ export class NFTTokensService {
         );
       }
     }
+    if (isEmpty(contractAttributes)) return;
 
     if (contract) {
-      contract.attributes = contractAttributes;
-      await contract.save();
+      await this.nftCollectionAttributesModel.updateOne(
+        {
+          contractAddress: contract.contractAddress,
+        },
+        { attributes: contractAttributes },
+      );
     } else {
       const nftCollection = {
         contractAddress: contractAddress,
         attributes: contractAttributes,
       };
 
-      await this.nftCollectionAttributesModel.updateOne(
-        { contractAddress: contractAddress },
-        { $set: nftCollection },
-        { upsert: true },
-      );
+      await this.nftCollectionAttributesModel.create(nftCollection);
     }
   }
 
@@ -115,9 +110,9 @@ export class NFTTokensService {
   ) {
     attributes.forEach(({ trait_type, value }) => {
       contractAttributes[trait_type] = contractAttributes[trait_type] || {};
-      contractAttributes[trait_type][value] = contractAttributes[trait_type][
-        value
-      ].push(tokenId) || [tokenId];
+      contractAttributes[trait_type][value] =
+        contractAttributes[trait_type][value] || [];
+      contractAttributes[trait_type][value].push(tokenId);
     });
   }
 }

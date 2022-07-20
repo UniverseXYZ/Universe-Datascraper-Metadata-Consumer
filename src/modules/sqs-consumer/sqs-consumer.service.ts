@@ -16,6 +16,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import https from 'https';
 import { RuleEngineService } from '../rule-engine/rule-engine.service';
+import { EthereumService } from '../ethereum/ethereum.service';
 
 @Injectable()
 export class SqsConsumerService
@@ -28,6 +29,7 @@ export class SqsConsumerService
   constructor(
     private configService: ConfigService,
     private metadataRuleEngine: RuleEngineService,
+    private ethereumService: EthereumService,
   ) {
     const region = this.configService.get('aws.region');
     const accessKeyId = this.configService.get('aws.accessKeyId');
@@ -78,6 +80,11 @@ export class SqsConsumerService
   }
 
   async handleMessage(message: AWS.SQS.Message): Promise<void> {
+    const ether = this.ethereumService.ether;
+    if (!ether) {
+      this.logger.warn("[Metadata Consumer] Provider isn't available. Skipping this iteration. Message will be processed again after visibility timeout ends.");
+      return;
+    }
     this.logger.log(`Handle sqs message id:(${message.MessageId})`);
     const tokenMessage: TokenMessage = JSON.parse(message.Body);
     const { contractAddress, contractType, tokenId } = tokenMessage;

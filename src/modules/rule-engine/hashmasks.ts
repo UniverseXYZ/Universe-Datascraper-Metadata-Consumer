@@ -3,6 +3,7 @@ import { ERC721_ABI } from '../nft-contract/contract';
 import { IMetadataHandler } from './interface/metadata-handler';
 import { buildAbi, buildAbiReadFunction } from '../../utils/ethereum';
 import { getArweaveMapping, HashmaskArweaveMapping } from './interface/hashmasks-arweave-mapping';
+import { EthereumService } from '../ethereum/ethereum.service';
 
 const ARWEAVE_BASE_URL = process.env.ARWEAVE_BASE_URL,
   REGISTRY_CONTRACT_ADDR = '0x185c8078285A3dE3EC9a2C203AD12853F03c462D';
@@ -44,7 +45,7 @@ const getImageUrlForTokenId = (tokenId: string): string => {
 
 export const HashmasksMetadataHandler: IMetadataHandler = async (
   tokenId: string,
-  provider: ethers.providers.BaseProvider,
+  ethereumService: EthereumService,
   contractAddress: string
 ) => {
 
@@ -55,7 +56,7 @@ export const HashmasksMetadataHandler: IMetadataHandler = async (
   
   // Look up attributes
   try {
-    const registryContract = new ethers.Contract(REGISTRY_CONTRACT_ADDR, REGISTRY_ABI, provider);
+    const registryContract = new ethers.Contract(REGISTRY_CONTRACT_ADDR, REGISTRY_ABI, ethereumService.ether);
   
     const attributes: RegistryAttributes = await registryContract.getTraitsOfMaskId(tokenId),
       attributesFormatted = Object.keys(attributes).map(trait => ({
@@ -71,6 +72,10 @@ export const HashmasksMetadataHandler: IMetadataHandler = async (
       'Fetch metadata from Hashmasks Registry contract failed',
       JSON.stringify(error),
     );
+    if (error?.error?.reason === 'timeout' || error?.error?.code === 429) {
+      return ethereumService.connectToProvider(() => HashmasksMetadataHandler(contractAddress, ethereumService, tokenId));
+    }
+
     return {
       success: false,
       error:
@@ -81,7 +86,7 @@ export const HashmasksMetadataHandler: IMetadataHandler = async (
 
   // Look up name from token contract itself
   try {
-    const tokenContract = new ethers.Contract(contractAddress, TOKEN_ABI, provider);
+    const tokenContract = new ethers.Contract(contractAddress, TOKEN_ABI, ethereumService.ether);
 
     metadata.name = await tokenContract.tokenNameByIndex(tokenId);
 

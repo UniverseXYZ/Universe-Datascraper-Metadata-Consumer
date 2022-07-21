@@ -3269,8 +3269,8 @@
     "whatwg-url" "^8.0.0"
 
 "datascraper-schema@git+https://github.com/UniverseXYZ/Universe-Datascraper-Schema.git#dev":
-  "resolved" "git+ssh://git@github.com/UniverseXYZ/Universe-Datascraper-Schema.git#3470a0ac418775cb3ab8720b662512f985c2957c"
-  "version" "0.1.10"
+  "resolved" "git+ssh://git@github.com/UniverseXYZ/Universe-Datascraper-Schema.git#c75a8a2ed64a7b653ff94386077e7577890c3121"
+  "version" "0.1.11"
   dependencies:
     "@nestjs/mongoose" "^9.0.2"
     "migrate-mongo" "^8.2.3"

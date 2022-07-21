@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { EthereumService } from 'src/modules/ethereum/ethereum.service';
 
 export interface IMetadataFetcherResponse {
   success: boolean;
@@ -10,7 +10,7 @@ export interface IMetadataFetcherResponse {
 export interface IMetadataHandler {
   (
     tokenId: string,
-    provider?: ethers.providers.BaseProvider,
+    ethereumService?: EthereumService,
     contractAddress?: string
   ): Promise<IMetadataFetcherResponse>;
 }

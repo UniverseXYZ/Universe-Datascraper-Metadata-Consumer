@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import { IMetadataHandler } from './interface/metadata-handler';
 import { buildAbi, buildAbiReadFunction } from '../../utils/ethereum';
+import { EthereumService } from '../ethereum/ethereum.service';
 
 const CRYPTOPUNKS_ABI = buildAbi(
   buildAbiReadFunction(
@@ -19,12 +20,12 @@ const CRYPTOPUNKS_METADATA_ADDRESS =
   '0x16F5A35647D6F03D5D3da7b35409D65ba03aF3B2';
 export const CryptopunksMetadataHandler: IMetadataHandler = async (
   tokenId: string,
-  provider: ethers.providers.BaseProvider,
+  ethereumService: EthereumService,
 ) => {
   const contract = new ethers.Contract(
     CRYPTOPUNKS_METADATA_ADDRESS,
     CRYPTOPUNKS_ABI,
-    provider,
+    ethereumService.ether,
   );
   try {
     const metadataFromChain = await contract.punkAttributes(Number(tokenId));
@@ -45,6 +46,10 @@ export const CryptopunksMetadataHandler: IMetadataHandler = async (
       'Fetch metadata from Cryptopunks token failed',
       JSON.stringify(error),
     );
+    if (error?.error?.reason === 'timeout' || error?.error?.code === 429) {
+      return ethereumService.connectToProvider(() => CryptopunksMetadataHandler(tokenId, ethereumService));
+    }
+
     return {
       success: false,
       error:

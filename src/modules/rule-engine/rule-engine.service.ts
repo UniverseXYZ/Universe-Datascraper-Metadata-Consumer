@@ -42,7 +42,7 @@ export class RuleEngineService {
       if (ruleEngine) {
         metadataRes = await ruleEngine.metadataHandler(
           tokenId,
-          this.ethereumService.ether,
+          this.ethereumService,
           contractAddress,
         );
       } else {

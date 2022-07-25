@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -12,6 +13,7 @@ import { isEmpty } from 'lodash';
 @Injectable()
 export class NFTTokensService {
   constructor(
+    private configService: ConfigService,
     @InjectModel(NFTToken.name)
     private readonly nftTokensModel: Model<NFTTokensDocument>,
     @InjectModel(NFTCollectionAttributes.name)
@@ -21,21 +23,24 @@ export class NFTTokensService {
   async updateOne(nftToken: NFTTokensDTO) {
     const { contractAddress, tokenId, ...res } = nftToken;
     const attributes = res?.metadata?.attributes;
-    const token = await this.nftTokensModel.findOne({
-      contractAddress,
-      tokenId,
-    });
 
     await this.nftTokensModel.updateOne(
       { contractAddress, tokenId },
       { ...res },
     );
 
+    const disabled = JSON.parse(this.configService.get('disableAggregation'));
+
     // Exit if there is no metadata
-    if (!attributes) return;
+    if (!attributes || disabled) return;
 
     const contract = await this.nftCollectionAttributesModel.findOne({
       contractAddress,
+    });
+
+    const token = await this.nftTokensModel.findOne({
+      contractAddress,
+      tokenId,
     });
 
     let contractAttributes = contract?.attributes;

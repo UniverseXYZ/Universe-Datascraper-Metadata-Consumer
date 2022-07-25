@@ -72,7 +72,7 @@ export const HashmasksMetadataHandler: IMetadataHandler = async (
       'Fetch metadata from Hashmasks Registry contract failed',
       JSON.stringify(error),
     );
-    if (error?.error?.reason === 'timeout' || error?.error?.code === 429) {
+    if (error?.error?.reason === 'timeout' || error?.error?.code === 429 || error?.error?.status === 403 || error?.error?.code === 'TIMEOUT') {
       return ethereumService.connectToProvider(() => HashmasksMetadataHandler(contractAddress, ethereumService, tokenId));
     }
 

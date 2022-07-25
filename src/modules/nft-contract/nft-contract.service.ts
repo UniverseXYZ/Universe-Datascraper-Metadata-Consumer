@@ -39,7 +39,7 @@ export class NFTContractService {
       return { success: true, tokenUri };
     } catch (err) {
       this.logger.log('Get tokenUri from contract failed', JSON.stringify(err));
-      if (err?.error?.reason === 'timeout' || err?.error?.code === 429) {
+      if (err?.error?.reason === 'timeout' || err?.error?.code === 429 || err?.error?.status === 403 || err?.error?.code === 'TIMEOUT') {
         return this.ethService.connectToProvider(() => this.getTokenUri(contractAddress, contractType, tokenId));
       }
       return {

@@ -23,7 +23,7 @@ export const CryptofootballMetadataHandler: IMetadataHandler = async (
       'Fetch metadata from Cryptofootball token failed',
       JSON.stringify(error),
     );
-    if (error?.error?.reason === 'timeout' || error?.error?.code === 429) {
+    if (error?.error?.reason === 'timeout' || error?.error?.code === 429 || error?.error?.status === 403 || error?.error?.code === 'TIMEOUT') {
       return ethereumService.connectToProvider(() => CryptofootballMetadataHandler(contractAddress, ethereumService, tokenId));
     }
     return {

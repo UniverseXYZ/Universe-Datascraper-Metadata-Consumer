@@ -11,6 +11,7 @@ import { IMetadataFetcherResponse } from './interface/metadata-handler';
 
 @Injectable()
 export class RuleEngineService {
+  private readonly PUBLIC_GATEWAY = "https://gateway.pinata.cloud/ipfs/";
   private readonly logger = new Logger(RuleEngineService.name);
 
   constructor(
@@ -80,6 +81,9 @@ export class RuleEngineService {
 
   private formatTokenUri(tokenUri: string) {
     const ipfsGateway = this.configService.get('ipfs_gateway');
+    if (tokenUri.startsWith(this.PUBLIC_GATEWAY)) {
+      return tokenUri.replace(this.PUBLIC_GATEWAY, ipfsGateway);
+    }
     const regex = /^ipfs:\/\/(ipfs\/){0,1}/;
     const isIpfs = regex.test(tokenUri);
     if (isIpfs) {

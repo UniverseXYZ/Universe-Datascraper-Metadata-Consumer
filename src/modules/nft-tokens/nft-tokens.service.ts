@@ -26,7 +26,7 @@ export class NFTTokensService {
 
     await this.nftTokensModel.updateOne(
       { contractAddress, tokenId },
-      { ...res, sentForMediaAt: null },
+      { ...res, sentForMediaAt: null, needToRefreshMediaFiles: true },
     );
 
     const disabled = JSON.parse(this.configService.get('disableAggregation'));
